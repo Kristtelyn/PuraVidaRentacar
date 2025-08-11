@@ -126,11 +126,13 @@ public class Main {
             System.out.println("\n-- RESERVAS --");
             System.out.println("1) Crear reserva");
             System.out.println("2) Ver activas");
+            System.out.println("3) Entregar vehiculo");
             System.out.println("0) Volver");
             System.out.print("Opción: ");
             String op = sc.nextLine();
             if (op.equals("1")) crearReserva();
             else if (op.equals("2")) verReservasActivas();
+            else if (op.equals("3")) entregarVehiculo();
             else if (op.equals("0")) back = true;
             else System.out.println("Invalida");
         }
@@ -200,4 +202,69 @@ public class Main {
         vehiculos[nVeh++] = new Vehiculo("PVR-303", "Rio", 27500);
         vehiculos[nVeh++] = new Vehiculo("PVR-404", "Versa", 29000);
     }
+
+// Entrega de vihiculo
+static void entregarVehiculo() {
+    System.out.print("Placa a ENTREGAR: ");
+    String pla = sc.nextLine().trim();
+    int i = buscarVehiculo(pla);
+    if (i == -1) { 
+        System.out.println("No existe"); 
+        return; 
+    }
+
+    Vehiculo v = vehiculos[i];
+
+    if (v.reservadoPor == null) {
+        System.out.println("Ese vehículo no tiene una reserva activa.");
+        return;
+    }
+    if (!v.disponible) {
+        System.out.println("Ya fue entregado (OCUPADO).");
+        return;
+    }
+
+    v.disponible = false;
+    System.out.println("Vehículo " + v.placa + " ENTREGADO al cliente " + v.reservadoPor + ".");
+}
+
+//Elegir el vehículo y asociar cliente
+static void elegirVehiculoYAsociarCliente() {
+    System.out.println("Vehículos DISPONIBLES:");
+    listarVehiculos(true);
+
+    System.out.print("Placa: ");
+    String pla = sc.nextLine().trim();
+    int iv = buscarVehiculo(pla);
+    if (iv == -1) { 
+        System.out.println("No existe"); 
+        return; 
+    }
+
+    Vehiculo v = vehiculos[iv];
+    if (!v.disponible || v.mantenimiento) { 
+        System.out.println("No disponible"); 
+        return; 
+    }
+
+    System.out.print("Cédula del cliente: ");
+    String ced = sc.nextLine().trim();
+    if (buscarCliente(ced) == -1) { 
+        System.out.println("Cliente no registrado"); 
+        return; 
+    }
+
+    System.out.print("Días: ");
+    int d = leerEntero();
+    if (d <= 0) { 
+        System.out.println("Días inválidos"); 
+        return; 
+    }
+
+    v.reservadoPor = ced;
+    v.diasReservados = d;
+    v.disponible = false;
+    System.out.println("Reserva creada para " + ced + " por " + d + " día(s).");
+}
+
 }
