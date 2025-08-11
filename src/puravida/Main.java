@@ -165,21 +165,48 @@ public class Main {
     }
 
     // Devoluciones
-    static void menuDevoluciones() {
-        System.out.print("Placa a devolver: "); String p = sc.nextLine().trim();
-        int i = buscarVehiculo(p); if (i == -1) { System.out.println("No existe"); return; }
-        Vehiculo v = vehiculos[i];
-        if (v.reservadoPor == null) { System.out.println("Ese vehiculo no esta reservado"); return; }
-        double monto = v.diasReservados * v.tarifa;
-        System.out.println("\n===== FACTURA =====");
-        System.out.println("Placa: " + v.placa);
-        System.out.println("Cliente: " + v.reservadoPor);
-        System.out.println("Dias: " + v.diasReservados);
-        System.out.println("Tarifa/dia: " + v.tarifa);
-        System.out.println("TOTAL: " + monto);
-        System.out.println("===================\n");
-        v.reservadoPor = null; v.diasReservados = 0; v.disponible = true;
+       static void menuDevoluciones() {
+        System.out.println("\nVehículos ocupados:");
+    boolean Ocupados = false;
+    for (int j = 0; j < nVeh; j++) {
+        Vehiculo vehiculo = vehiculos[j];
+        if (!vehiculo.disponible && vehiculo.reservadoPor != null && !vehiculo.mantenimiento) {
+            System.out.println(vehiculo.placa + " -- " + vehiculo.modelo + " (Cliente: " + vehiculo.reservadoPor + ")");
+            Ocupados = true;
+        }
     }
+    if (!Ocupados) {
+        System.out.println("No hay vehículos por devolver.");
+        return;
+    }
+    
+    System.out.print("Placa a devolver: "); 
+    String p = sc.nextLine().trim();
+    int i = buscarVehiculo(p); 
+    if (i == -1) { 
+        System.out.println("No existe"); 
+        return; 
+    }
+    Vehiculo v = vehiculos[i];
+    if (v.reservadoPor == null) { 
+        System.out.println("Este vehiculo no tiene reserva"); 
+        return; 
+    }
+
+    double total = v.diasReservados * v.tarifa;
+    System.out.println("\nFacturacion");
+    System.out.println("Placa: " + v.placa);
+    System.out.println("Cliente: " + v.reservadoPor);
+    System.out.println("Dias: " + v.diasReservados);
+    System.out.println("Tarifa: " + v.tarifa);
+    System.out.println("Total: " + total);
+
+    
+    v.reservadoPor = null; 
+    v.diasReservados = 0; 
+    v.disponible = true;
+}
+
 
     // Utilidades
     static int leerEntero() {
