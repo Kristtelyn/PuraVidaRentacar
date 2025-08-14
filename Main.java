@@ -20,7 +20,7 @@ public class Main {
             System.out.println("4) Devoluciones / Factura");
             System.out.println("5) Consultar Vehículos");
             System.out.println("0) Salir");
-            System.out.print("Opción: ");
+            System.out.print("Opcion: ");
             switch (sc.nextLine()) {
                 case "1": menuClientes(); break;
                 case "2": menuVehiculos(); break;
@@ -325,3 +325,4 @@ public class Main {
     }
 
 }
+
