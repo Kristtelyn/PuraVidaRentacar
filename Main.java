@@ -141,7 +141,7 @@ public class Main {
             System.out.println("2) Ver activas");
             System.out.println("3) Entregar vehiculo");
             System.out.println("0) Volver");
-            System.out.print("Opción: ");
+            System.out.print("Opcion: ");
             String op = sc.nextLine();
             if (op.equals("1")) crearReserva();
             else if (op.equals("2")) verReservasActivas();
@@ -252,7 +252,7 @@ public class Main {
             System.out.println("1) Ver disponibles");
             System.out.println("2) Ver ocupados");
             System.out.println("0) Volver");
-            System.out.print("Opción: ");
+            System.out.print("Opcion: ");
             switch (sc.nextLine()) {
                 case "1": listarVehiculos(true); break;
                 case "2": listarVehiculosOcupados(); break;
@@ -325,4 +325,5 @@ public class Main {
     }
 
 }
+
 
