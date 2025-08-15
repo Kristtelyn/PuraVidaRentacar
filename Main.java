@@ -18,7 +18,7 @@ public class Main {
             System.out.println("2) Vehiculos");
             System.out.println("3) Reservas");
             System.out.println("4) Devoluciones / Factura");
-            System.out.println("5) Consultar Vehículos");
+            System.out.println("5) Consultar Vehiculos");
             System.out.println("0) Salir");
             System.out.print("Opcion: ");
             switch (sc.nextLine()) {
@@ -198,12 +198,12 @@ public class Main {
             return;
         }
         v.disponible = false; 
-        System.out.println("Vehículo entregado correctamente.");
+        System.out.println("Vehiculo entregado correctamente.");
     }
 
     // Devoluciones
        static void menuDevoluciones() {
-        System.out.println("\nVehículos ocupados:");
+        System.out.println("\nVehiculos ocupados:");
     boolean Ocupados = false;
     for (int j = 0; j < nVeh; j++) {
         Vehiculo vehiculo = vehiculos[j];
@@ -213,7 +213,7 @@ public class Main {
         }
     }
     if (!Ocupados) {
-        System.out.println("No hay vehículos por devolver.");
+        System.out.println("No hay vehiculos por devolver.");
         return;
     }
     
@@ -248,7 +248,7 @@ public class Main {
     static void menuConsultaVehiculos() {
         boolean back = false;
         while (!back) {
-            System.out.println("\n-- CONSULTA DE VEHÍCULOS --");
+            System.out.println("\n-- CONSULTA DE VEHICULOS --");
             System.out.println("1) Ver disponibles");
             System.out.println("2) Ver ocupados");
             System.out.println("0) Volver");
@@ -257,7 +257,7 @@ public class Main {
                 case "1": listarVehiculos(true); break;
                 case "2": listarVehiculosOcupados(); break;
                 case "0": back = true; break;
-                default: System.out.println("Opción inválida");
+                default: System.out.println("Opcion invalida");
             }
         }
     }
@@ -285,9 +285,9 @@ public class Main {
         vehiculos[nVeh++] = new Vehiculo("PVR-404", "Versa", 29000);
     }
 
-//Elegir el vehículo y asociar cliente
+//Elegir el vehiculo y asociar cliente
     static void elegirVehiculoYAsociarCliente() {
-        System.out.println("Vehículos DISPONIBLES:");
+        System.out.println("Vehiculos DISPONIBLES:");
         listarVehiculos(true);
 
         System.out.print("Placa: ");
@@ -304,26 +304,27 @@ public class Main {
             return; 
         }
 
-        System.out.print("Cédula del cliente: ");
+        System.out.print("Cedula del cliente: ");
         String ced = sc.nextLine().trim();
         if (buscarCliente(ced) == -1) { 
             System.out.println("Cliente no registrado"); 
             return; 
         }
 
-        System.out.print("Días: ");
+        System.out.print("Dias: ");
         int d = leerEntero();
         if (d <= 0) { 
-            System.out.println("Días inválidos"); 
+            System.out.println("Dias invalidos"); 
             return; 
         }
 
         v.reservadoPor = ced;
         v.diasReservados = d;
         v.disponible = false;
-        System.out.println("Reserva creada para " + ced + " por " + d + " día(s).");
+        System.out.println("Reserva creada para " + ced + " por " + d + " dia(s).");
     }
 
 }
+
 
 
