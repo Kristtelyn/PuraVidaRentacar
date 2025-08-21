@@ -1,66 +1,86 @@
 package puravida;
 
-import java.util.Scanner;
+import javax.swing.JOptionPane;
 
 public class Main {
     static final int MAX = 60;
     static Cliente[] clientes = new Cliente[MAX];
     static Vehiculo[] vehiculos = new Vehiculo[MAX];
     static int nCli = 0, nVeh = 0;
-    static Scanner sc = new Scanner(System.in);
 
     public static void main(String[] args) {
         seed();
         boolean salir = false;
         while (!salir) {
-            System.out.println("\n=== PURAVIDA RENTACAR ===");
-            System.out.println("1) Clientes");
-            System.out.println("2) Vehiculos");
-            System.out.println("3) Reservas");
-            System.out.println("4) Devoluciones / Factura");
-            System.out.println("5) Consultar Vehiculos");
-            System.out.println("0) Salir");
-            System.out.print("Opcion: ");
-            switch (sc.nextLine()) {
+            String menu = 
+                "=== PURAVIDA RENTACAR ===\n" +
+                "1) Clientes\n" +
+                "2) Vehiculos\n" +
+                "3) Reservas\n" +
+                "4) Devoluciones / Factura\n" +
+                "5) Consultar Vehiculos\n" +
+                "0) Salir\n" +
+                "Opcion:";
+            String op = prompt(menu);
+            if (op == null) { // Cancelar = salir
+                salir = true;
+                break;
+            }
+            switch (op.trim()) {
                 case "1": menuClientes(); break;
                 case "2": menuVehiculos(); break;
                 case "3": menuReservas(); break;
                 case "4": menuDevoluciones(); break;
                 case "5": menuConsultaVehiculos(); break;
                 case "0": salir = true; break;
-                default: System.out.println("Opcion invalida");
+                default: alert("Opcion invalida");
             }
         }
     }
 
-    // Clientes
+    // Utilidades
+    static String prompt(String msg) {
+        return JOptionPane.showInputDialog(null, msg, "PuraVida Rentacar", JOptionPane.QUESTION_MESSAGE);
+    }
+    static void alert(String msg) {
+        JOptionPane.showMessageDialog(null, msg, "PuraVida Rentacar", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    // === Clientes ===
     static void menuClientes() {
         boolean back = false;
         while (!back) {
-            System.out.println("\n-- CLIENTES --");
-            System.out.println("1) Registrar");
-            System.out.println("2) Listar");
-            System.out.println("0) Volver");
-            System.out.print("Opcion: ");
-            String op = sc.nextLine();
+            String op = prompt(
+                "-- CLIENTES --\n" +
+                "1) Registrar\n" +
+                "2) Listar\n" +
+                "0) Volver\n" +
+                "Opcion:"
+            );
+            if (op == null) return;
             if (op.equals("1")) registrarCliente();
             else if (op.equals("2")) listarClientes();
             else if (op.equals("0")) back = true;
-            else System.out.println("Invalida");
+            else alert("Opcion invalida");
         }
     }
     static void registrarCliente() {
-        if (nCli >= MAX) { System.out.println("Sin espacio"); return; }
-        System.out.print("Cedula: "); String ced = sc.nextLine().trim();
-        if (buscarCliente(ced) != -1) { System.out.println("Ya existe"); return; }
-        System.out.print("Nombre: "); String nom = sc.nextLine().trim();
-        System.out.print("Telefono: "); String tel = sc.nextLine().trim();
-        clientes[nCli++] = new Cliente(ced, nom, tel);
-        System.out.println("Cliente registrado");
+        if (nCli >= MAX) { alert("Sin espacio"); return; }
+        String ced = prompt("Cedula:");
+        if (ced == null || ced.isBlank()) return;
+        if (buscarCliente(ced.trim()) != -1) { alert("Ya existe"); return; }
+        String nom = prompt("Nombre:");
+        if (nom == null || nom.isBlank()) return;
+        String tel = prompt("Telefono:");
+        if (tel == null || tel.isBlank()) return;
+        clientes[nCli++] = new Cliente(ced.trim(), nom.trim(), tel.trim());
+        alert("Cliente registrado");
     }
     static void listarClientes() {
-        if (nCli == 0) { System.out.println("No hay clientes"); return; }
-        for (int i = 0; i < nCli; i++) System.out.println((i + 1) + ") " + clientes[i]);
+        if (nCli == 0) { alert("No hay clientes"); return; }
+        StringBuilder sb = new StringBuilder("CLIENTES:\n");
+        for (int i = 0; i < nCli; i++) sb.append((i + 1)).append(") ").append(clientes[i]).append('\n');
+        alert(sb.toString());
     }
     static int buscarCliente(String ced) {
         for (int i = 0; i < nCli; i++) if (clientes[i].cedula.equalsIgnoreCase(ced)) return i;
@@ -71,209 +91,217 @@ public class Main {
     static void menuVehiculos() {
         boolean back = false;
         while (!back) {
-            System.out.println("\n-- VEHICULOS --");
-            System.out.println("1) Registrar");
-            System.out.println("2) Listar todos");
-            System.out.println("3) Listar disponibles");
-            System.out.println("4) Enviar a mantenimiento");
-            System.out.println("5) Salir de mantenimiento");
-            System.out.println("0) Volver");
-            System.out.print("Opcion: ");
-            switch (sc.nextLine()) {
+            String op = prompt(
+                "-- VEHICULOS --\n" +
+                "1) Registrar\n" +
+                "2) Listar todos\n" +
+                "3) Listar disponibles\n" +
+                "4) Enviar a mantenimiento\n" +
+                "5) Salir de mantenimiento\n" +
+                "0) Volver\n" +
+                "Opcion:"
+            );
+            if (op == null) return;
+            switch (op.trim()) {
                 case "1": registrarVehiculo(); break;
                 case "2": listarVehiculos(false); break;
                 case "3": listarVehiculos(true); break;
                 case "4": cambiarMantenimiento(true); break;
                 case "5": cambiarMantenimiento(false); break;
                 case "0": back = true; break;
-                default: System.out.println("Invalida");
+                default: alert("Opcion invalida");
             }
         }
     }
     static void registrarVehiculo() {
-        if (nVeh >= MAX) { System.out.println("Sin espacio"); return; }
-        System.out.print("Placa: "); String pla = sc.nextLine().trim();
-        if (buscarVehiculo(pla) != -1) { System.out.println("Ya existe"); return; }
-        System.out.print("Modelo: "); String mod = sc.nextLine().trim();
-        System.out.print("Tarifa por dia: "); double t = leerDouble();
-        vehiculos[nVeh++] = new Vehiculo(pla, mod, t);
-        System.out.println("Vehiculo registrado");
+        if (nVeh >= MAX) { alert("Sin espacio"); return; }
+        String pla = prompt("Placa:");
+        if (pla == null || pla.isBlank()) return;
+        if (buscarVehiculo(pla.trim()) != -1) { alert("Ya existe"); return; }
+        String mod = prompt("Modelo:");
+        if (mod == null || mod.isBlank()) return;
+        Double t = leerDouble("Tarifa por dia:");
+        if (t == null) return;
+        vehiculos[nVeh++] = new Vehiculo(pla.trim(), mod.trim(), t);
+        alert("Vehiculo registrado");
     }
     static void listarVehiculos(boolean soloDisp) {
+        StringBuilder sb = new StringBuilder();
         boolean hay = false;
         for (int i = 0; i < nVeh; i++) {
             Vehiculo v = vehiculos[i];
             if (!soloDisp || (v.disponible && !v.mantenimiento)) {
-                System.out.println(v); hay = true;
+                sb.append(v).append('\n'); hay = true;
             }
         }
-        if (!hay) System.out.println("No hay vehiculos para mostrar");
+        alert(hay ? sb.toString() : "No hay vehiculos para mostrar");
     }
     static void listarVehiculosOcupados() {
+        StringBuilder sb = new StringBuilder();
         boolean hay = false;
         for (int i = 0; i < nVeh; i++) {
             Vehiculo v = vehiculos[i];
             if (!v.disponible && !v.mantenimiento && v.reservadoPor != null) {
-                System.out.println(v); hay = true;
+                sb.append(v).append('\n'); hay = true;
             }
         }
-        if (!hay) System.out.println("No hay vehículos ocupados actualmente.");
+        alert(hay ? sb.toString() : "No hay vehiculos ocupados actualmente.");
     }
-
     static int buscarVehiculo(String placa) {
         for (int i = 0; i < nVeh; i++) if (vehiculos[i].placa.equalsIgnoreCase(placa)) return i;
         return -1;
     }
     static void cambiarMantenimiento(boolean enviar) {
-        System.out.print("Placa: "); String p = sc.nextLine().trim();
-        int i = buscarVehiculo(p); if (i == -1) { System.out.println("No existe"); return; }
+        String p = prompt("Placa:");
+        if (p == null || p.isBlank()) return;
+        int i = buscarVehiculo(p.trim());
+        if (i == -1) { alert("No existe"); return; }
         Vehiculo v = vehiculos[i];
-        if (enviar) { v.mantenimiento = true; v.disponible = false; System.out.println("En mantenimiento"); }
-        else { v.mantenimiento = false; if (v.reservadoPor == null) v.disponible = true; System.out.println("Disponible"); }
+        if (enviar) { v.mantenimiento = true; v.disponible = false; alert("En mantenimiento"); }
+        else { v.mantenimiento = false; if (v.reservadoPor == null) v.disponible = true; alert("Disponible"); }
     }
 
     // Reservas
     static void menuReservas() {
         boolean back = false;
         while (!back) {
-            System.out.println("\n-- RESERVAS --");
-            System.out.println("1) Crear reserva");
-            System.out.println("2) Ver activas");
-            System.out.println("3) Entregar vehiculo");
-            System.out.println("0) Volver");
-            System.out.print("Opcion: ");
-            String op = sc.nextLine();
+            String op = prompt(
+                "-- RESERVAS --\n" +
+                "1) Crear reserva\n" +
+                "2) Ver activas\n" +
+                "3) Entregar vehiculo\n" +
+                "0) Volver\n" +
+                "Opcion:"
+            );
+            if (op == null) return;
             if (op.equals("1")) crearReserva();
             else if (op.equals("2")) verReservasActivas();
             else if (op.equals("3")) entregarVehiculo();
             else if (op.equals("0")) back = true;
-            else System.out.println("Invalida");
+            else alert("Opcion invalida");
         }
     }
     static void crearReserva() {
-        System.out.println("Vehiculos Disponibles:");
+        alert("Vehiculos Disponibles:");
         listarVehiculos(true);
-        System.out.print("Placa: "); String p = sc.nextLine().trim();
-        int iv = buscarVehiculo(p); if (iv == -1) { System.out.println("No existe"); return; }
+        String p = prompt("Placa:");
+        if (p == null || p.isBlank()) return;
+        int iv = buscarVehiculo(p.trim()); if (iv == -1) { alert("No existe"); return; }
         Vehiculo v = vehiculos[iv];
-        if (!v.disponible || v.mantenimiento) { System.out.println("No disponible"); return; }
+        if (!v.disponible || v.mantenimiento) { alert("No disponible"); return; }
 
-        System.out.print("Cedula cliente: "); String c = sc.nextLine().trim();
-        if (buscarCliente(c) == -1) { System.out.println("Cliente no registrado"); return; }
+        String c = prompt("Cedula cliente:");
+        if (c == null || c.isBlank()) return;
+        if (buscarCliente(c.trim()) == -1) { alert("Cliente no registrado"); return; }
 
-        System.out.print("Dias: "); int d = leerEntero(); if (d <= 0) { System.out.println("Dias invalidos"); return; }
-        
-        v.reservadoPor = c; 
-        v.diasReservados = d; 
+        Integer d = leerEntero("Dias:");
+        if (d == null || d <= 0) { alert("Dias invalidos"); return; }
+
+        v.reservadoPor = c.trim();
+        v.diasReservados = d;
         v.disponible = false;
 
-        System.out.println("Reserva creada para " + p + " por " + d + " dia(s)");
+        alert("Reserva creada para " + p.trim() + " por " + d + " dia(s)");
     }
     static void verReservasActivas() {
+        StringBuilder sb = new StringBuilder();
         boolean hay = false;
         for (int i = 0; i < nVeh; i++) {
             Vehiculo v = vehiculos[i];
             if (v.reservadoPor != null) {
-                System.out.println(v.placa + " -> cliente " + v.reservadoPor + ", " + v.diasReservados + " dia(s)");
+                sb.append(v.placa).append(" -> cliente ").append(v.reservadoPor)
+                  .append(", ").append(v.diasReservados).append(" dia(s)\n");
                 hay = true;
             }
         }
-        if (!hay) System.out.println("No hay reservas activas");
+        alert(hay ? sb.toString() : "No hay reservas activas");
     }
 
-//entregar vehiculo
+    // entregar vehiculo
     static void entregarVehiculo() {
-        System.out.print("Placa a ENTREGAR: ");
-        String pla = sc.nextLine().trim();
-        int i = buscarVehiculo(pla);
-        if (i == -1) { System.out.println("No existe"); return; }
-
+        String pla = prompt("Placa a ENTREGAR:");
+        if (pla == null || pla.isBlank()) return;
+        int i = buscarVehiculo(pla.trim());
+        if (i == -1) { alert("No existe"); return; }
         Vehiculo v = vehiculos[i];
-        if (v.reservadoPor == null) {
-            System.out.println("Ese vehículo no tiene una reserva activa.");
-            return;
+        if (v.reservadoPor == null) { alert("Ese vehiculo no tiene una reserva activa."); return; }
+        if (!v.disponible) { alert("Ya fue entregado (OCUPADO)."); return; }
+        v.disponible = false;
+        alert("Vehiculo entregado correctamente.");
+    }
+
+    // Devoluciones / Factura
+    static void menuDevoluciones() {
+        StringBuilder sb = new StringBuilder("Vehiculos ocupados:\n");
+        boolean Ocupados = false;
+        for (int j = 0; j < nVeh; j++) {
+            Vehiculo vehiculo = vehiculos[j];
+            if (!vehiculo.disponible && vehiculo.reservadoPor != null && !vehiculo.mantenimiento) {
+                sb.append(vehiculo.placa).append(" -- ").append(vehiculo.modelo)
+                  .append(" (Cliente: ").append(vehiculo.reservadoPor).append(")\n");
+                Ocupados = true;
+            }
         }
-        if (!v.disponible) {
-            System.out.println("Ya fue entregado (OCUPADO).");
-            return;
-        }
-        v.disponible = false; 
-        System.out.println("Vehiculo entregado correctamente.");
+        if (!Ocupados) { alert("No hay vehiculos por devolver."); return; }
+        alert(sb.toString());
+
+        String p = prompt("Placa a devolver:");
+        if (p == null || p.isBlank()) return;
+        int i = buscarVehiculo(p.trim());
+        if (i == -1) { alert("No existe"); return; }
+        Vehiculo v = vehiculos[i];
+        if (v.reservadoPor == null) { alert("Este vehiculo no tiene reserva"); return; }
+
+        double total = v.diasReservados * v.tarifa;
+        String factura = "Facturacion\n" +
+                "Placa: " + v.placa + "\n" +
+                "Cliente: " + v.reservadoPor + "\n" +
+                "Dias: " + v.diasReservados + "\n" +
+                "Tarifa: " + v.tarifa + "\n" +
+                "Total: " + total;
+        alert(factura);
+
+        v.reservadoPor = null;
+        v.diasReservados = 0;
+        v.disponible = true;
     }
 
-    // Devoluciones
-       static void menuDevoluciones() {
-        System.out.println("\nVehiculos ocupados:");
-    boolean Ocupados = false;
-    for (int j = 0; j < nVeh; j++) {
-        Vehiculo vehiculo = vehiculos[j];
-        if (!vehiculo.disponible && vehiculo.reservadoPor != null && !vehiculo.mantenimiento) {
-            System.out.println(vehiculo.placa + " -- " + vehiculo.modelo + " (Cliente: " + vehiculo.reservadoPor + ")");
-            Ocupados = true;
-        }
-    }
-    if (!Ocupados) {
-        System.out.println("No hay vehiculos por devolver.");
-        return;
-    }
-    
-    System.out.print("Placa a devolver: "); 
-    String p = sc.nextLine().trim();
-    int i = buscarVehiculo(p); 
-    if (i == -1) { 
-        System.out.println("No existe"); 
-        return; 
-    }
-    Vehiculo v = vehiculos[i];
-    if (v.reservadoPor == null) { 
-        System.out.println("Este vehiculo no tiene reserva"); 
-        return; 
-    }
-
-    double total = v.diasReservados * v.tarifa;
-    System.out.println("\nFacturacion");
-    System.out.println("Placa: " + v.placa);
-    System.out.println("Cliente: " + v.reservadoPor);
-    System.out.println("Dias: " + v.diasReservados);
-    System.out.println("Tarifa: " + v.tarifa);
-    System.out.println("Total: " + total);
-
-    
-    v.reservadoPor = null; 
-    v.diasReservados = 0; 
-    v.disponible = true;
-}
-
-// Consulta Vehículos
+    // Consulta Vehiculos
     static void menuConsultaVehiculos() {
         boolean back = false;
         while (!back) {
-            System.out.println("\n-- CONSULTA DE VEHICULOS --");
-            System.out.println("1) Ver disponibles");
-            System.out.println("2) Ver ocupados");
-            System.out.println("0) Volver");
-            System.out.print("Opcion: ");
-            switch (sc.nextLine()) {
+            String op = prompt(
+                "-- CONSULTA DE VEHICULOS --\n" +
+                "1) Ver disponibles\n" +
+                "2) Ver ocupados\n" +
+                "0) Volver\n" +
+                "Opcion:"
+            );
+            if (op == null) return;
+            switch (op.trim()) {
                 case "1": listarVehiculos(true); break;
                 case "2": listarVehiculosOcupados(); break;
                 case "0": back = true; break;
-                default: System.out.println("Opcion invalida");
+                default: alert("Opcion invalida");
             }
         }
     }
 
-
     // Utilidades
-    static int leerEntero() {
+    static Integer leerEntero(String msg) {
         while (true) {
-            try { return Integer.parseInt(sc.nextLine().trim()); }
-            catch (Exception e) { System.out.print("Numero invalido, intente: "); }
+            String s = prompt(msg);
+            if (s == null) return null;
+            try { return Integer.parseInt(s.trim()); }
+            catch (Exception e) { msg = "Numero invalido, intente nuevamente:"; }
         }
     }
-    static double leerDouble() {
+    static Double leerDouble(String msg) {
         while (true) {
-            try { return Double.parseDouble(sc.nextLine().trim()); }
-            catch (Exception e) { System.out.print("Numero invalido, intente: "); }
+            String s = prompt(msg);
+            if (s == null) return null;
+            try { return Double.parseDouble(s.trim()); }
+            catch (Exception e) { msg = "Numero invalido, intente nuevamente:"; }
         }
     }
 
@@ -285,46 +313,29 @@ public class Main {
         vehiculos[nVeh++] = new Vehiculo("PVR-404", "Versa", 29000);
     }
 
-//Elegir el vehiculo y asociar cliente
+    
     static void elegirVehiculoYAsociarCliente() {
-        System.out.println("Vehiculos DISPONIBLES:");
+        alert("Vehiculos DISPONIBLES:");
         listarVehiculos(true);
 
-        System.out.print("Placa: ");
-        String pla = sc.nextLine().trim();
-        int iv = buscarVehiculo(pla);
-        if (iv == -1) { 
-            System.out.println("No existe"); 
-            return; 
-        }
+        String pla = prompt("Placa:");
+        if (pla == null || pla.isBlank()) return;
+        int iv = buscarVehiculo(pla.trim());
+        if (iv == -1) { alert("No existe"); return; }
 
         Vehiculo v = vehiculos[iv];
-        if (!v.disponible || v.mantenimiento) { 
-            System.out.println("No disponible"); 
-            return; 
-        }
+        if (!v.disponible || v.mantenimiento) { alert("No disponible"); return; }
 
-        System.out.print("Cedula del cliente: ");
-        String ced = sc.nextLine().trim();
-        if (buscarCliente(ced) == -1) { 
-            System.out.println("Cliente no registrado"); 
-            return; 
-        }
+        String ced = prompt("Cedula del cliente:");
+        if (ced == null || ced.isBlank()) return;
+        if (buscarCliente(ced.trim()) == -1) { alert("Cliente no registrado"); return; }
 
-        System.out.print("Dias: ");
-        int d = leerEntero();
-        if (d <= 0) { 
-            System.out.println("Dias invalidos"); 
-            return; 
-        }
+        Integer d = leerEntero("Dias:");
+        if (d == null || d <= 0) { alert("Dias invalidos"); return; }
 
-        v.reservadoPor = ced;
+        v.reservadoPor = ced.trim();
         v.diasReservados = d;
         v.disponible = false;
-        System.out.println("Reserva creada para " + ced + " por " + d + " dia(s).");
+        alert("Reserva creada para " + ced.trim() + " por " + d + " dia(s).");
     }
-
 }
-
-
-
